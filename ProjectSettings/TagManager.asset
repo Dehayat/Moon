@@ -56,3 +56,6 @@ TagManager:
   - name: UI
     uniqueID: 2173990641
     locked: 0
+  - name: NightOverlay
+    uniqueID: 4291528259
+    locked: 0

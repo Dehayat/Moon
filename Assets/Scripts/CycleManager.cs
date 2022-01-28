@@ -6,6 +6,9 @@ using UnityEngine;
 [DefaultExecutionOrder(-1)]
 public class CycleManager : MonoBehaviour
 {
+    public float stayNightDuration = 2.4f;
+    public float durationBetweenWolfAttacks = 0.6f;
+
     private List<Character> allCharacters;
     private void Awake()
     {
@@ -100,7 +103,7 @@ public class CycleManager : MonoBehaviour
         }
         else
         {
-            StartCoroutine(DelayStartNight());
+            StartCoroutine(NightSequence());
         }
     }
 
@@ -116,13 +119,39 @@ public class CycleManager : MonoBehaviour
         return true;
     }
 
-    IEnumerator DelayStartNight()
+    private bool nightCallbackDone = false;
+    IEnumerator NightSequence()
     {
         yield return new WaitForSeconds(0.5f);
-        StartNightCycle();
+
+        WorldData.instance.nightAnim.blackScreenDone += BlackScreenDone;
+        nightCallbackDone = false;
+        WorldData.instance.nightAnim.FadeToBlack();
+        yield return new WaitUntil(() => nightCallbackDone);
+        RemoveDeadPlayers();
+        EndNightCycle();
+
+        var listOfAttackedHumans = GetAndCalcAttackedHumans();
+
+        for (int i = 0; i < listOfAttackedHumans.Count; i++)
+        {
+            listOfAttackedHumans[i].WolfAttackEffect();
+            yield return new WaitForSeconds(durationBetweenWolfAttacks);
+        }
+
+        yield return new WaitForSeconds(stayNightDuration);
+
+        nightCallbackDone = false;
+        WorldData.instance.nightAnim.FadeFromBlack();
+        yield return new WaitUntil(() => nightCallbackDone);
+        WorldData.instance.nightAnim.blackScreenDone -= BlackScreenDone;
+    }
+    private void BlackScreenDone()
+    {
+        nightCallbackDone = true;
     }
 
-    private void StartNightCycle()
+    private void RemoveDeadPlayers()
     {
         for (int i = 0; i < allCharacters.Count; i++)
         {
@@ -131,14 +160,23 @@ public class CycleManager : MonoBehaviour
                 allCharacters[i].Remove();
             }
         }
+    }
+    private List<Character> GetAndCalcAttackedHumans()
+    {
+
+        List<Character> attackedCharacters = new List<Character>();
         for (int i = 0; i < wolfs.Count; i++)
         {
             if (allCharacters[wolfs[i]].isAlive)
             {
-                allCharacters[wolfs[i]].ChooseWolfAttack();
+                var attackedCharacter = allCharacters[wolfs[i]].ChooseWolfAttack();
+                if (attackedCharacter != null)
+                {
+                    attackedCharacters.Add(attackedCharacter);
+                }
             }
         }
-        EndNightCycle();
+        return attackedCharacters;
     }
 
     private void EndNightCycle()

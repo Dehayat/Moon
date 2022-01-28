@@ -13,6 +13,7 @@ public class WorldData : MonoBehaviour
     public LayerMask charactersLayer;
     public LayerMask nodesLayer;
     public GameUI gameUI;
+    public NightAnim nightAnim;
 
     [Header("Gameplay Data")]
     public int wolfCount = 2;

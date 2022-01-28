@@ -66,6 +66,13 @@ public class Character : MonoBehaviour
     public float fadeBackDuration = 0.5f;
     public ParticleSystem getHitEffect;
 
+    [Header("Wolf Attack Animation")]
+    public ParticleSystem getHitByWolfEffect;
+
+    [Header("Other stuff")]
+    
+    private SpriteRenderer spriteRenderer;
+
 
     [Header("Debug Info")]
     public int currentHealth = 0;
@@ -74,7 +81,6 @@ public class Character : MonoBehaviour
 
     private Node currentNode = null;
     private bool canAction = false;
-    private SpriteRenderer spriteRenderer;
 
     private enum SelectState
     {
@@ -95,7 +101,6 @@ public class Character : MonoBehaviour
 
     private void Awake()
     {
-        spriteRenderer = GetComponent<SpriteRenderer>();
         currentHealth = Health;
     }
 
@@ -136,6 +141,11 @@ public class Character : MonoBehaviour
                 }
             }
         }
+    }
+
+    public void WolfAttackEffect()
+    {
+        getHitByWolfEffect.Play();
     }
 
     public void Remove()
@@ -186,7 +196,7 @@ public class Character : MonoBehaviour
         attackedByWolf = false;
     }
 
-    public void ChooseWolfAttack()
+    public Character ChooseWolfAttack()
     {
         var humanTarget = WorldData.instance.map.FindHumanToAttack(currentNode, bloodType.bloodTypePreference);
 
@@ -198,6 +208,8 @@ public class Character : MonoBehaviour
         {
             //Debug.LogError(this + " can't find target human");
         }
+
+        return humanTarget;
 
         //Debug.Log(gameObject + " wants to wolfAttack " + humanTarget);
     }
