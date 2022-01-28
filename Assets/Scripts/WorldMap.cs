@@ -141,7 +141,7 @@ public struct Graph
                 nextNodes.Enqueue(new queuedNode(nextNodeId, nextDistance));
             }
         }
-        Debug.LogError("Cannot find humans with bloodtype preference " + bloodType);
+        //Debug.LogError("Cannot find humans with bloodtype preference " + bloodType);
         return null;
     }
 

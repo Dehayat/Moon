@@ -196,7 +196,7 @@ public class Character : MonoBehaviour
         }
         else
         {
-            Debug.LogError(this + " can't find target human");
+            //Debug.LogError(this + " can't find target human");
         }
 
         //Debug.Log(gameObject + " wants to wolfAttack " + humanTarget);
