@@ -30,6 +30,7 @@ public class Character : MonoBehaviour
         currentHealth -= damageAmount;
         if (currentHealth <= 0)
         {
+            spriteRenderer.enabled = false;
             isAlive = false;
             currentHealth = 0;
             if (canAction)
@@ -53,12 +54,27 @@ public class Character : MonoBehaviour
     public int WolfAttack = 5;
     public BloodTypeData bloodType;
 
-    private Node currentNode = null;
-    private bool canAction = false;
+    [Header("Move Animation")]
+    public float nodeHopDuration = 0.4f;
+    public float nodeHopePauseDuration = 0.1f;
+
+    [Header("Attack Animation")]
+    public float fadeAwayDuration = 0.5f;
+    public float fadeStayDuration = 0.05f;
+    public float attackEffectDuration = 0.3f;
+    public float attackStayDuration = 0.05f;
+    public float fadeBackDuration = 0.5f;
+    public ParticleSystem getHitEffect;
+
+
     [Header("Debug Info")]
     public int currentHealth = 0;
     public bool isWolf = false;
     public bool isAlive = true;
+
+    private Node currentNode = null;
+    private bool canAction = false;
+    private SpriteRenderer spriteRenderer;
 
     private enum SelectState
     {
@@ -79,12 +95,13 @@ public class Character : MonoBehaviour
 
     private void Awake()
     {
+        spriteRenderer = GetComponent<SpriteRenderer>();
         currentHealth = Health;
     }
 
     private void Start()
     {
-        GoToNode(startNode);
+        FinalizeGoToNode(startNode);
     }
     private List<Node> nodesInRange;
     private List<Character> charactersInRange;
@@ -114,13 +131,54 @@ public class Character : MonoBehaviour
                 {
                     if (charactersInRange.Contains(character))
                     {
-                        AttackCharacter(character);
-                        Deselect();
-                        UseAction();
+                        StartCoroutine(AttackSequence(character));
                     }
                 }
             }
         }
+    }
+
+    public void Remove()
+    {
+        currentNode.ExitNode(this);
+        isRemoved = true;
+        gameObject.SetActive(false);
+    }
+
+    IEnumerator AttackSequence(Character character)
+    {
+        WorldData.instance.isActionPaused = true;
+        Deselect();
+        UseAction();
+
+        float timer = 0f;
+        Color startColor = spriteRenderer.color;
+        Color endColor = spriteRenderer.color;
+        endColor.a = 0f;
+        while (timer < fadeAwayDuration)
+        {
+            spriteRenderer.color = Color.Lerp(startColor, endColor, timer / fadeAwayDuration);
+            timer += Time.deltaTime;
+            yield return new WaitForEndOfFrame();
+        }
+        spriteRenderer.color = endColor;
+        yield return new WaitForSeconds(fadeStayDuration);
+        AttackCharacter(character);
+        yield return new WaitForSeconds(attackEffectDuration);
+        yield return new WaitForSeconds(attackStayDuration);
+        startColor.a = 0f;
+        endColor.a = 1f;
+        timer = 0f;
+        while (timer < fadeBackDuration)
+        {
+            spriteRenderer.color = Color.Lerp(startColor, endColor, timer / fadeBackDuration);
+            timer += Time.deltaTime;
+            yield return new WaitForEndOfFrame();
+        }
+        spriteRenderer.color = endColor;
+
+
+        WorldData.instance.isActionPaused = false;
     }
 
     public void ResetInfo()
@@ -145,10 +203,16 @@ public class Character : MonoBehaviour
     }
 
     private bool attackedByWolf = false;
+    internal bool isRemoved;
+
     private void AttackByWolf(int damage)
     {
         attackedByWolf = true;
         Damage(damage);
+        if (!isAlive)
+        {
+            spriteRenderer.enabled = false;
+        }
     }
 
     private void UseAction()
@@ -159,6 +223,7 @@ public class Character : MonoBehaviour
 
     private void AttackCharacter(Character character)
     {
+        character.getHitEffect.Play();
         character.Damage(Attack);
     }
 
@@ -203,16 +268,39 @@ public class Character : MonoBehaviour
                 {
                     if (node.IsEmpty() && nodesInRange.Contains(node))
                     {
-                        GoToNode(node);
-                        Deselect();
-                        UseAction();
+                        StartCoroutine(GoToNodeSequence(node));
                     }
                 }
             }
         }
     }
+    IEnumerator GoToNodeSequence(Node node)
+    {
+        WorldData.instance.isActionPaused = true;
+        Deselect();
+        UseAction();
+        List<Node> movePath = WorldData.instance.map.GetPathToNode(currentNode, node);
 
-    private void GoToNode(Node node)
+        for (int i = 0; i < movePath.Count - 1; i++)
+        {
+            Vector3 startPosition = movePath[i].transform.position;
+            Vector3 endPosition = movePath[i + 1].transform.position;
+            float timer = 0f;
+            while (timer < nodeHopDuration)
+            {
+                transform.position = Vector3.Lerp(startPosition, endPosition, timer / nodeHopDuration);
+                timer += Time.deltaTime;
+                yield return new WaitForEndOfFrame();
+            }
+            transform.position = endPosition;
+            yield return new WaitForSeconds(nodeHopePauseDuration);
+        }
+
+        FinalizeGoToNode(node);
+        WorldData.instance.isActionPaused = false;
+    }
+
+    private void FinalizeGoToNode(Node node)
     {
         if (currentNode != null)
         {

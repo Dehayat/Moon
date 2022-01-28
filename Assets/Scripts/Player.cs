@@ -5,11 +5,16 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+
     private Character selectedCharacter = null;
     private Character hoveredCharacter = null;
 
     private void Update()
     {
+        if (WorldData.instance.isActionPaused)
+        {
+            return;
+        }
         if (selectedCharacter == null && Input.GetMouseButtonDown(0))
         {
             RaycastHit2D rayHit = Physics2D.GetRayIntersection(Camera.main.ScreenPointToRay(Input.mousePosition), 100f, WorldData.instance.charactersLayer);

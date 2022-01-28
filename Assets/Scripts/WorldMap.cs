@@ -144,6 +144,52 @@ public struct Graph
         Debug.LogError("Cannot find humans with bloodtype preference " + bloodType);
         return null;
     }
+
+    private struct queuedNodeExtra
+    {
+        public int nodeId;
+        public int distance;
+        public List<int> pathToNode;
+        public queuedNodeExtra(int id, int distance, List<int> pathBefore)
+        {
+            nodeId = id;
+            this.distance = distance;
+            if (pathBefore == null)
+            {
+                pathToNode = new List<int>();
+            }
+            else
+            {
+                pathToNode = new List<int>(pathBefore);
+            }
+            pathToNode.Add(id);
+        }
+    }
+    public List<int> FindPathBetweenNodes(int startNode, int endnode)
+    {
+        ClearVisited();
+        Queue<queuedNodeExtra> nextNodes = new Queue<queuedNodeExtra>();
+        nextNodes.Enqueue(new queuedNodeExtra(startNode, 0, null));
+        visited[startNode] = true;
+        while (nextNodes.Count > 0)
+        {
+            queuedNodeExtra currentNode = nextNodes.Dequeue();
+            if (currentNode.nodeId == endnode)
+            {
+                return currentNode.pathToNode;
+            }
+            int nextDistance = currentNode.distance + 1;
+            for (int i = 0; i < graph[currentNode.nodeId].Count; i++)
+            {
+                int nextNodeId = graph[currentNode.nodeId][i];
+                if (visited[nextNodeId]) continue;
+                visited[nextNodeId] = true;
+                nextNodes.Enqueue(new queuedNodeExtra(nextNodeId, nextDistance, currentNode.pathToNode));
+            }
+        }
+        Debug.LogError("Can't find path between nodes " + startNode + " and " + endnode);
+        return null;
+    }
 }
 
 public class WorldMap : MonoBehaviour
@@ -175,6 +221,16 @@ public class WorldMap : MonoBehaviour
         graph = new Graph(nodes, edges);
     }
 
+    public List<Node> GetPathToNode(Node currentNode, Node node)
+    {
+        List<int> path = graph.FindPathBetweenNodes(currentNode.id, node.id);
+        List<Node> pathNodes = new List<Node>();
+        for (int i = 0; i < path.Count; i++)
+        {
+            pathNodes.Add(nodes[path[i]]);
+        }
+        return pathNodes;
+    }
 
     private void OnDrawGizmos()
     {

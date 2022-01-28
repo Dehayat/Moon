@@ -18,6 +18,9 @@ public class WorldData : MonoBehaviour
     public int wolfCount = 2;
     public bool randomizePositions = false;
 
+    [Header("Game State")]
+    public bool isActionPaused = false;
+
     private void Awake()
     {
         instance = this;

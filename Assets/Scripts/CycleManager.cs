@@ -124,6 +124,13 @@ public class CycleManager : MonoBehaviour
 
     private void StartNightCycle()
     {
+        for (int i = 0; i < allCharacters.Count; i++)
+        {
+            if (!allCharacters[i].isAlive && !allCharacters[i].isRemoved)
+            {
+                allCharacters[i].Remove();
+            }
+        }
         for (int i = 0; i < wolfs.Count; i++)
         {
             if (allCharacters[wolfs[i]].isAlive)
