@@ -6,7 +6,22 @@ using UnityEngine.UI;
 
 public class CharacterUI : MonoBehaviour
 {
+    public GameObject statsPanel;
     public Text hpText;
+    public Text attackText;
+    public Text wolfAttackText;
+    public Text rangeText;
+    public Text bloodTypeText;
+
+
+    public void ShowStats()
+    {
+        statsPanel.SetActive(true);
+    }
+    public void HideStats()
+    {
+        statsPanel.SetActive(false);
+    }
 
     private Character character;
     private void Awake()
@@ -29,6 +44,10 @@ public class CharacterUI : MonoBehaviour
 
     private void Start()
     {
+        attackText.text = character.Attack.ToString();
+        wolfAttackText.text = character.WolfAttack.ToString();
+        rangeText.text = character.Range.ToString();
+        bloodTypeText.text = character.bloodType.bloodTypeName;
         UpdateHP();
     }
 

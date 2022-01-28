@@ -1,23 +1,23 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Node : MonoBehaviour
 {
+    [Header("Debug info")]
     public int id;
-
-
-    public List<Character> charactersInNode;
+    public Character characterInNode = null;
 
     public void EnterNode(Character character)
     {
-        charactersInNode.Add(character);
+        characterInNode = character;
     }
     public void ExitNode(Character character)
     {
-        if (charactersInNode.Contains(character))
+        if (characterInNode == character)
         {
-            charactersInNode.Remove(character);
+            characterInNode = null;
         }
         else
         {
@@ -25,8 +25,8 @@ public class Node : MonoBehaviour
         }
     }
 
-    private void Awake()
+    public bool IsEmpty()
     {
-        charactersInNode = new List<Character>();
+        return characterInNode == null;
     }
 }

@@ -201,7 +201,7 @@ public class Character : MonoBehaviour
                 var node = rayHit.collider.GetComponent<Node>();
                 if (node != null)
                 {
-                    if (nodesInRange.Contains(node))
+                    if (node.IsEmpty() && nodesInRange.Contains(node))
                     {
                         GoToNode(node);
                         Deselect();
@@ -255,7 +255,10 @@ public class Character : MonoBehaviour
                 Gizmos.color = Color.green;
                 for (int i = 0; i < nodesInRange.Count; i++)
                 {
-                    Gizmos.DrawWireSphere(nodesInRange[i].transform.position, 1.1f);
+                    if (nodesInRange[i].IsEmpty())
+                    {
+                        Gizmos.DrawWireSphere(nodesInRange[i].transform.position, 1.1f);
+                    }
                 }
             }
         }

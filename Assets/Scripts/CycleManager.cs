@@ -36,7 +36,20 @@ public class CycleManager : MonoBehaviour
     private void Start()
     {
         ChooseWolfs();
+        if (WorldData.instance.randomizePositions)
+        {
+            RandomizePositions();
+        }
         StartCoroutine(DelayStartDay());
+    }
+
+    private void RandomizePositions()
+    {
+        var nodes = WorldData.instance.map.GetRandomNodes(allCharacters.Count);
+        for (int i = 0; i < allCharacters.Count; i++)
+        {
+            allCharacters[i].startNode = nodes[i];
+        }
     }
 
     private List<int> wolfs = new List<int>();

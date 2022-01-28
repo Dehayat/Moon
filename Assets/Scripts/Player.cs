@@ -6,6 +6,7 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     private Character selectedCharacter = null;
+    private Character hoveredCharacter = null;
 
     private void Update()
     {
@@ -27,6 +28,42 @@ public class Player : MonoBehaviour
         if (selectedCharacter != null && Input.GetMouseButtonDown(1))
         {
             DeslectCurrentCharacter();
+        }
+        if (hoveredCharacter == null)
+        {
+            RaycastHit2D rayHit = Physics2D.GetRayIntersection(Camera.main.ScreenPointToRay(Input.mousePosition), 100f, WorldData.instance.charactersLayer);
+            if (rayHit.collider != null)
+            {
+                var character = rayHit.collider.GetComponent<Character>();
+                if (character != null)
+                {
+                    hoveredCharacter = character;
+                    hoveredCharacter.GetComponent<CharacterUI>().ShowStats();
+                }
+            }
+        }
+        else
+        {
+            bool leaveHover = false;
+            RaycastHit2D rayHit = Physics2D.GetRayIntersection(Camera.main.ScreenPointToRay(Input.mousePosition), 100f, WorldData.instance.charactersLayer);
+            if (rayHit.collider != null)
+            {
+                var character = rayHit.collider.GetComponent<Character>();
+                if (character == null && hoveredCharacter != character)
+                {
+                    leaveHover = true;
+                    hoveredCharacter = character;
+                }
+            }
+            else
+            {
+                leaveHover = true;
+            }
+            if (leaveHover)
+            {
+                hoveredCharacter.GetComponent<CharacterUI>().HideStats();
+                hoveredCharacter = null;
+            }
         }
     }
 

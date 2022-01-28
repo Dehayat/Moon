@@ -16,6 +16,7 @@ public class WorldData : MonoBehaviour
 
     [Header("Gameplay Data")]
     public int wolfCount = 2;
+    public bool randomizePositions = false;
 
     private void Awake()
     {

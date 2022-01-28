@@ -126,13 +126,10 @@ public struct Graph
         while (nextNodes.Count > 0)
         {
             queuedNode currentNode = nextNodes.Dequeue();
-            for (int j = 0; j < nodes[currentNode.nodeId].charactersInNode.Count; j++)
+            var character = nodes[currentNode.nodeId].characterInNode;
+            if (character != null && character.isAlive && !character.isWolf && (bloodType == BloodType.IGNORE || (bloodType & character.bloodType.bloodType) != 0))
             {
-                var character = nodes[currentNode.nodeId].charactersInNode[j];
-                if (character.isAlive && !character.isWolf && (bloodType == BloodType.IGNORE || (bloodType & character.bloodType.bloodType) != 0))
-                {
-                    return character;
-                }
+                return character;
             }
             int nextDistance = currentNode.distance + 1;
             for (int i = 0; i < graph[currentNode.nodeId].Count; i++)
@@ -164,12 +161,9 @@ public class WorldMap : MonoBehaviour
         var nodesInRange = GetNodesInRange(currentNode, range);
         for (int i = 0; i < nodesInRange.Count; i++)
         {
-            for (int j = 0; j < nodesInRange[i].charactersInNode.Count; j++)
+            if (nodesInRange[i].characterInNode != null && nodesInRange[i].characterInNode.isAlive)
             {
-                if (nodesInRange[i].charactersInNode[j].isAlive)
-                {
-                    charactersInRange.Add(nodesInRange[i].charactersInNode[j]);
-                }
+                charactersInRange.Add(nodesInRange[i].characterInNode);
             }
         }
         return charactersInRange;
@@ -207,5 +201,24 @@ public class WorldMap : MonoBehaviour
         {
             return graph.GetClosestHuman(node.id, BloodType.IGNORE);
         }
+    }
+
+    public List<Node> GetRandomNodes(int count)
+    {
+        if (count > nodes.Length)
+        {
+            Debug.LogError("Requested random nodes is larger than node count");
+            return null;
+        }
+        List<Node> randomNodes = new List<Node>();
+        while (randomNodes.Count < count)
+        {
+            int random = UnityEngine.Random.Range(0, nodes.Length);
+            if (!randomNodes.Contains(nodes[random]))
+            {
+                randomNodes.Add(nodes[random]);
+            }
+        }
+        return randomNodes;
     }
 }
