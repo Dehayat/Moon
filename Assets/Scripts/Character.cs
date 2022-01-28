@@ -90,7 +90,7 @@ public class Character : MonoBehaviour
     }
     private void OnDisable()
     {
-        WorldData.instance.cycleManager.RemoveCharacter(this);
+        //WorldData.instance.cycleManager.RemoveCharacter(this);
     }
 
     private void Awake()

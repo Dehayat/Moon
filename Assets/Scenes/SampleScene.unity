@@ -235,7 +235,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 128
   gameUI: {fileID: 1270457590}
-  wolfCount: 3
+  wolfCount: 2
   randomizePositions: 1
   isActionPaused: 0
 --- !u!4 &22050631
