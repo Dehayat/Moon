@@ -71,7 +71,7 @@ public class Character : MonoBehaviour
 
     [Header("Other stuff")]
     
-    private SpriteRenderer spriteRenderer;
+    public SpriteRenderer spriteRenderer;
 
 
     [Header("Debug Info")]

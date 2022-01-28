@@ -116,6 +116,7 @@ MonoBehaviour:
   fadeBackDuration: 0.25
   getHitEffect: {fileID: 1037565088410215580}
   getHitByWolfEffect: {fileID: 3616669299497172071}
+  spriteRenderer: {fileID: 3815526310261106447}
   currentHealth: 0
   isWolf: 0
   isAlive: 1
@@ -150,8 +151,8 @@ CapsuleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  m_Size: {x: 1.4, y: 2.5}
+  m_Offset: {x: 0.06153941, y: 1.0332441}
+  m_Size: {x: 1.085465, y: 2.1049109}
   m_Direction: 0
 --- !u!1 &641186103833838615
 GameObject:
@@ -187,7 +188,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 34.7}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &641186103833838613
@@ -726,7 +727,7 @@ RectTransform:
   m_GameObject: {fileID: 2767681705476179593}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_LocalScale: {x: 0.55, y: 0.55, z: 0.55}
   m_Children:
   - {fileID: 550114018657074709}
   - {fileID: 678155019624631587}
@@ -737,7 +738,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -53.7, y: -11.5}
+  m_AnchoredPosition: {x: -58, y: -11.5}
   m_SizeDelta: {x: 140, y: 140}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &768387333417121511
