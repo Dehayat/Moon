@@ -129,7 +129,6 @@ public class CycleManager : MonoBehaviour
         WorldData.instance.nightAnim.FadeToBlack();
         yield return new WaitUntil(() => nightCallbackDone);
         RemoveDeadPlayers();
-        EndNightCycle();
 
         var listOfAttackedHumans = GetAndCalcAttackedHumans();
 
@@ -145,6 +144,7 @@ public class CycleManager : MonoBehaviour
         WorldData.instance.nightAnim.FadeFromBlack();
         yield return new WaitUntil(() => nightCallbackDone);
         WorldData.instance.nightAnim.blackScreenDone -= BlackScreenDone;
+        EndNightCycle();
     }
     private void BlackScreenDone()
     {
