@@ -5,9 +5,21 @@ using UnityEngine;
 
 public class Node : MonoBehaviour
 {
+
     [Header("Debug info")]
     public int id;
     public Character characterInNode = null;
+    
+    private Animator anim;
+
+    public void Focus()
+    {
+        anim.Play("focus");
+    }
+    public void UnFocus()
+    {
+        anim.Play("default");
+    }
 
     public void EnterNode(Character character)
     {
@@ -28,5 +40,10 @@ public class Node : MonoBehaviour
     public bool IsEmpty()
     {
         return characterInNode == null;
+    }
+
+    private void Awake()
+    {
+        anim = GetComponent<Animator>();
     }
 }

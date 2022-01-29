@@ -9,13 +9,16 @@ public class Character : MonoBehaviour
     public Action damaged;
     public Action requestDeselect;
 
+
     public void EnabelAction()
     {
         canAction = true;
+        EnterDeslectState();
     }
     public void DisableAction()
     {
         canAction = false;
+        EnterDeslectState();
     }
     public bool CanSelect()
     {
@@ -30,9 +33,10 @@ public class Character : MonoBehaviour
         currentHealth -= damageAmount;
         if (currentHealth <= 0)
         {
-            spriteRenderer.enabled = false;
+            //spriteRenderer.enabled = false;
             isAlive = false;
             currentHealth = 0;
+            spriteRenderer.sprite = deadSprite;
             if (canAction)
             {
                 if (selectState != SelectState.deselected)
@@ -69,9 +73,15 @@ public class Character : MonoBehaviour
     [Header("Wolf Attack Animation")]
     public ParticleSystem getHitByWolfEffect;
 
+    [Header("Other Animation")]
+    public Animator targetAnim;
+    public Animator canActAnim;
+    public ParticleSystem bleedEffect;
+
     [Header("Other stuff")]
-    
+
     public SpriteRenderer spriteRenderer;
+    public Sprite deadSprite;
 
 
     [Header("Debug Info")]
@@ -158,8 +168,8 @@ public class Character : MonoBehaviour
     IEnumerator AttackSequence(Character character)
     {
         WorldData.instance.isActionPaused = true;
-        Deselect();
         UseAction();
+        Deselect();
 
         float timer = 0f;
         Color startColor = spriteRenderer.color;
@@ -194,6 +204,7 @@ public class Character : MonoBehaviour
     public void ResetInfo()
     {
         attackedByWolf = false;
+        bleedEffect.Stop();
     }
 
     public Character ChooseWolfAttack()
@@ -223,7 +234,12 @@ public class Character : MonoBehaviour
         Damage(damage);
         if (!isAlive)
         {
-            spriteRenderer.enabled = false;
+            bleedEffect.Stop();
+            //spriteRenderer.enabled = false;
+        }
+        else
+        {
+            bleedEffect.Play();
         }
     }
 
@@ -243,29 +259,105 @@ public class Character : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.S))
         {
-            selectState = SelectState.Move;
-            nodesInRange = WorldData.instance.map.GetNodesInRange(currentNode, Range);
+            ExitAttackState();
+            EnterMoveState();
         }
     }
 
+    private void EnterMoveState()
+    {
+        selectState = SelectState.Move;
+        nodesInRange = WorldData.instance.map.GetNodesInRange(currentNode, Range);
+        if (nodesInRange != null)
+        {
+            for (int i = 0; i < nodesInRange.Count; i++)
+            {
+                if (nodesInRange[i].IsEmpty())
+                {
+                    nodesInRange[i].Focus();
+                }
+            }
+        }
+    }
+    private void ExitMoveState()
+    {
+        if (nodesInRange != null)
+        {
+            for (int i = 0; i < nodesInRange.Count; i++)
+            {
+                if (nodesInRange[i].IsEmpty())
+                {
+                    nodesInRange[i].UnFocus();
+                }
+            }
+        }
+    }
+    private void EnterAttackState()
+    {
+        selectState = SelectState.Attack;
+        charactersInRange = WorldData.instance.map.GetCharactersInRange(currentNode, Range);
+        if (charactersInRange != null)
+        {
+            for (int i = 0; i < charactersInRange.Count; i++)
+            {
+                charactersInRange[i].Focus();
+            }
+        }
+    }
+    private void ExitAttackState()
+    {
+        if (charactersInRange != null)
+        {
+            for (int i = 0; i < charactersInRange.Count; i++)
+            {
+                charactersInRange[i].UnFocus();
+            }
+        }
+    }
 
     private void TryChangeToAttack()
     {
         if (Input.GetKeyDown(KeyCode.D))
         {
-            selectState = SelectState.Attack;
-            charactersInRange = WorldData.instance.map.GetCharactersInRange(currentNode, Range);
+            ExitMoveState();
+            EnterAttackState();
         }
     }
 
     public void Select()
     {
-        selectState = SelectState.Move;
-        nodesInRange = WorldData.instance.map.GetNodesInRange(currentNode, Range);
+        ExitDeslectState();
+        EnterMoveState();
     }
+
+    private void EnterDeslectState()
+    {
+        if (canAction)
+        {
+            canActAnim.Play("active");
+        }
+        else
+        {
+            canActAnim.Play("default");
+        }
+        selectState = SelectState.deselected;
+    }
+    private void ExitDeslectState()
+    {
+        canActAnim.Play("default");
+    }
+
     public void Deselect()
     {
-        selectState = SelectState.deselected;
+        if (selectState == SelectState.Move)
+        {
+            ExitMoveState();
+        }
+        if (selectState == SelectState.Attack)
+        {
+            ExitAttackState();
+        }
+        EnterDeslectState();
     }
 
     private void TryMove()
@@ -289,8 +381,8 @@ public class Character : MonoBehaviour
     IEnumerator GoToNodeSequence(Node node)
     {
         WorldData.instance.isActionPaused = true;
-        Deselect();
         UseAction();
+        Deselect();
         List<Node> movePath = WorldData.instance.map.GetPathToNode(currentNode, node);
 
         for (int i = 0; i < movePath.Count - 1; i++)
@@ -323,6 +415,17 @@ public class Character : MonoBehaviour
         transform.position = node.transform.position;
         nodesInRange = WorldData.instance.map.GetNodesInRange(currentNode, Range);
     }
+
+
+    public void Focus()
+    {
+        targetAnim.Play("focus");
+    }
+    public void UnFocus()
+    {
+        targetAnim.Play("default");
+    }
+
     private void OnDrawGizmos()
     {
         if (!isAlive)

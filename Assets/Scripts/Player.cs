@@ -13,6 +13,11 @@ public class Player : MonoBehaviour
     {
         if (WorldData.instance.isActionPaused)
         {
+            if (hoveredCharacter != null)
+            {
+                hoveredCharacter.GetComponent<CharacterUI>().HideStats();
+                hoveredCharacter = null;
+            }
             return;
         }
         if (selectedCharacter == null && Input.GetMouseButtonDown(0))

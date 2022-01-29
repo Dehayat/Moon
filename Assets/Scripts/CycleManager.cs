@@ -122,6 +122,8 @@ public class CycleManager : MonoBehaviour
     private bool nightCallbackDone = false;
     IEnumerator NightSequence()
     {
+
+        WorldData.instance.nightAnim.ShowClouds();
         yield return new WaitForSeconds(0.5f);
 
         WorldData.instance.nightAnim.blackScreenDone += BlackScreenDone;
@@ -142,6 +144,7 @@ public class CycleManager : MonoBehaviour
 
         nightCallbackDone = false;
         WorldData.instance.nightAnim.FadeFromBlack();
+        WorldData.instance.nightAnim.HideClouds();
         yield return new WaitUntil(() => nightCallbackDone);
         WorldData.instance.nightAnim.blackScreenDone -= BlackScreenDone;
         EndNightCycle();

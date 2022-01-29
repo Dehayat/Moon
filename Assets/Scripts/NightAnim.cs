@@ -8,7 +8,21 @@ public class NightAnim : MonoBehaviour
 
     public float fadeDuration = 2f;
     public SpriteRenderer nightSprite;
+    public ParticleSystem cloud1;
+    public ParticleSystem cloud2;
 
+
+    public void ShowClouds()
+    {
+        cloud1.Play();
+        cloud2.Play();
+    }
+
+    public void HideClouds()
+    {
+        cloud1.Stop();
+        cloud2.Stop();
+    }
 
     private bool isFading = false;
     public void FadeToBlack()
