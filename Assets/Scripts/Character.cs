@@ -57,6 +57,9 @@ public class Character : MonoBehaviour
     public int Attack = 3;
     public int WolfAttack = 5;
     public BloodTypeData bloodType;
+    public string characterName = "Name";
+
+    public UnityEngine.UI.Text nameText;
 
     [Header("Move Animation")]
     public float nodeHopDuration = 0.4f;
@@ -77,6 +80,7 @@ public class Character : MonoBehaviour
     public Animator targetAnim;
     public Animator canActAnim;
     public ParticleSystem bleedEffect;
+    public Material selectedMaterial;
 
     [Header("Other stuff")]
 
@@ -95,8 +99,7 @@ public class Character : MonoBehaviour
     private enum SelectState
     {
         deselected,
-        Move,
-        Attack
+        selected
     }
     private SelectState selectState;
 
@@ -108,33 +111,36 @@ public class Character : MonoBehaviour
     {
         //WorldData.instance.cycleManager.RemoveCharacter(this);
     }
-
+    private Material defaultMaterial;
     private void Awake()
     {
+        defaultMaterial = spriteRenderer.material;
         currentHealth = Health;
     }
 
     private void Start()
     {
+        nameText.text = characterName;
         FinalizeGoToNode(startNode);
     }
     private List<Node> nodesInRange;
     private List<Character> charactersInRange;
     private void Update()
     {
-        if (selectState == SelectState.Move)
+        if (WorldData.instance.isActionPaused)
         {
-            TryMove();
-            TryChangeToAttack();
+            return;
         }
-        else if (selectState == SelectState.Attack)
+        if (selectState == SelectState.selected)
         {
-            TryAttack();
-            TryChangeToMove();
+            if (!TryAttack())
+            {
+                TryMove();
+            }
         }
     }
 
-    private void TryAttack()
+    private bool TryAttack()
     {
         if (Input.GetMouseButtonDown(0))
         {
@@ -147,10 +153,12 @@ public class Character : MonoBehaviour
                     if (charactersInRange.Contains(character))
                     {
                         StartCoroutine(AttackSequence(character));
+                        return true;
                     }
                 }
             }
         }
+        return false;
     }
 
     public void WolfAttackEffect()
@@ -182,6 +190,7 @@ public class Character : MonoBehaviour
             yield return new WaitForEndOfFrame();
         }
         spriteRenderer.color = endColor;
+        WorldData.instance.audioSource.PlayOneShot(WorldData.instance.attackSound, 0.5f);
         yield return new WaitForSeconds(fadeStayDuration);
         AttackCharacter(character);
         yield return new WaitForSeconds(attackEffectDuration);
@@ -199,6 +208,7 @@ public class Character : MonoBehaviour
 
 
         WorldData.instance.isActionPaused = false;
+        EventSystem.instance.QueueEvent("CharAtk");
     }
 
     public void ResetInfo()
@@ -257,16 +267,22 @@ public class Character : MonoBehaviour
 
     private void TryChangeToMove()
     {
-        if (Input.GetKeyDown(KeyCode.S))
+        if (Input.GetKeyDown(KeyCode.Space))
         {
-            ExitAttackState();
-            EnterMoveState();
+            UnHighLightAttack();
+            EnterSelectState();
         }
     }
 
-    private void EnterMoveState()
+    private void EnterSelectState()
     {
-        selectState = SelectState.Move;
+        selectState = SelectState.selected;
+        HighLightMove();
+        HighLightAttack();
+    }
+
+    private void HighLightMove()
+    {
         nodesInRange = WorldData.instance.map.GetNodesInRange(currentNode, Range);
         if (nodesInRange != null)
         {
@@ -279,7 +295,12 @@ public class Character : MonoBehaviour
             }
         }
     }
-    private void ExitMoveState()
+    private void ExitSelectState()
+    {
+        UnHighLightMove();
+        UnHighLightAttack();
+    }
+    private void UnHighLightMove()
     {
         if (nodesInRange != null)
         {
@@ -292,9 +313,8 @@ public class Character : MonoBehaviour
             }
         }
     }
-    private void EnterAttackState()
+    private void HighLightAttack()
     {
-        selectState = SelectState.Attack;
         charactersInRange = WorldData.instance.map.GetCharactersInRange(currentNode, Range);
         if (charactersInRange != null)
         {
@@ -304,7 +324,7 @@ public class Character : MonoBehaviour
             }
         }
     }
-    private void ExitAttackState()
+    private void UnHighLightAttack()
     {
         if (charactersInRange != null)
         {
@@ -317,21 +337,22 @@ public class Character : MonoBehaviour
 
     private void TryChangeToAttack()
     {
-        if (Input.GetKeyDown(KeyCode.D))
+        if (Input.GetKeyDown(KeyCode.Space))
         {
-            ExitMoveState();
-            EnterAttackState();
+            ExitSelectState();
+            HighLightAttack();
         }
     }
 
     public void Select()
     {
         ExitDeslectState();
-        EnterMoveState();
+        EnterSelectState();
     }
 
     private void EnterDeslectState()
     {
+        spriteRenderer.material = defaultMaterial;
         if (canAction)
         {
             canActAnim.Play("active");
@@ -345,17 +366,14 @@ public class Character : MonoBehaviour
     private void ExitDeslectState()
     {
         canActAnim.Play("default");
+        spriteRenderer.material = selectedMaterial;
     }
 
     public void Deselect()
     {
-        if (selectState == SelectState.Move)
+        if (selectState == SelectState.selected)
         {
-            ExitMoveState();
-        }
-        if (selectState == SelectState.Attack)
-        {
-            ExitAttackState();
+            ExitSelectState();
         }
         EnterDeslectState();
     }
@@ -448,7 +466,7 @@ public class Character : MonoBehaviour
                 //Gizmos.DrawWireSphere(transform.position+Vector3.up*0.5f+ Vector3.right * 0.2f, 0.3f);
             }
         }
-        if (selectState == SelectState.Move)
+        if (selectState == SelectState.selected)
         {
             Gizmos.color = Color.cyan;
             Gizmos.DrawWireSphere(transform.position, 0.9f);
@@ -465,7 +483,7 @@ public class Character : MonoBehaviour
                 }
             }
         }
-        if (selectState == SelectState.Attack)
+        if (selectState == SelectState.selected)
         {
             Gizmos.color = Color.cyan;
             Gizmos.DrawWireSphere(transform.position, 0.9f);

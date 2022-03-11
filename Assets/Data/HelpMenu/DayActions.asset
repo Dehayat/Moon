@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eee56a98096ba274bb91528d1554e9da, type: 3}
+  m_Name: DayActions
+  m_EditorClassIdentifier: 
+  header: DAY ACTIONS
+  description: "You can select a character with [LEFT-MOUSE] and deselect them by
+    clicking on any point on the map.\r\nDuring the day each of us can either move
+    or attack another human; both actions are limited in distance by our range stat.
+    Places where the selected character can move are highlighted in yellow, villagers
+    the selected character can attack are highlighted in red. To move or attack just
+    click on the target you want to hit or move to. \r\nEvery villager can do only
+    one action per day. You can end the day at any point by pressing the \u201CEnd
+    Day\u201D button in the lower right corner.\r\n"

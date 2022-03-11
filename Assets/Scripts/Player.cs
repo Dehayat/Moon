@@ -32,9 +32,20 @@ public class Player : MonoBehaviour
                     selectedCharacter = character;
                     selectedCharacter.actionUsed += SelectedCharacterAction;
                     selectedCharacter.requestDeselect += DeslectCurrentCharacter;
+                    EventSystem.instance.QueueEvent("CharSeld");
                 }
             }
         }
+
+        if (selectedCharacter != null && Input.GetMouseButtonDown(0))
+        {
+            RaycastHit2D rayHit = Physics2D.GetRayIntersection(Camera.main.ScreenPointToRay(Input.mousePosition), 100f, WorldData.instance.charactersLayer);
+            if (rayHit.collider == null)
+            {
+                DeslectCurrentCharacter();
+            }
+        }
+
         if (selectedCharacter != null && Input.GetMouseButtonDown(1))
         {
             DeslectCurrentCharacter();

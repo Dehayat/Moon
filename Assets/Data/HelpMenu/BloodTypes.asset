@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eee56a98096ba274bb91528d1554e9da, type: 3}
+  m_Name: BloodTypes
+  m_EditorClassIdentifier: 
+  header: BLOOD TYPES AND NIGHT ATTACKS
+  description: "The werewolves have preferred blood types based on their own blood
+    type: type-O wolves like only type-O blood; type-As like A and O, and type-Bs
+    like B and O; type-AB wolves love every type of blood. So, every night, each
+    werewolf will attack the closest human with their preferred blood type; if they
+    don\u2019t find their favorite blood, they just go for the closest human. Remember
+    to also compare the HPs lost by the villagers during the night with the villagers\u2019
+    wolf Atk stat: it will be an important clue to understanding which of them are
+    the werewolves."

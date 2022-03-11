@@ -16,11 +16,13 @@ public class CharacterUI : MonoBehaviour
 
     public void ShowStats()
     {
-        statsPanel.SetActive(true);
+        WorldData.instance.gameUI.ShowStats(statsPanel.transform.position, character);
+        //statsPanel.SetActive(true);
     }
     public void HideStats()
     {
-        statsPanel.SetActive(false);
+        WorldData.instance.gameUI.HideStats();
+        //statsPanel.SetActive(false);
     }
 
     private Character character;

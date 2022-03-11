@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eee56a98096ba274bb91528d1554e9da, type: 3}
+  m_Name: stats
+  m_EditorClassIdentifier: 
+  header: STATS
+  description: "You can see every character\u2019s stats by hovering over them. The
+    range stat specifies the maximum distance of nodes the selected character can
+    move to or attack. Each of us has a certain amount of HPs (health points), that
+    decreases when we\u2019re attacked by a werewolf or another human. The Atk stat
+    describes how hard we hit during the day; the wolf Atk describes the werewolves\u2019
+    power in reducing our HPs during the night. "

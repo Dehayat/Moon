@@ -8,11 +8,16 @@ public class CycleManager : MonoBehaviour
 {
     public float stayNightDuration = 2.4f;
     public float durationBetweenWolfAttacks = 0.6f;
+    public float fadeMusicNightDuration = 1f;
 
     private List<Character> allCharacters;
     private void Awake()
     {
         allCharacters = new List<Character>();
+        if (GameInfo.isTutorial)
+        {
+            WorldData.instance.tutorial.enabled = true;
+        }
     }
 
     public void EndDay()
@@ -38,12 +43,45 @@ public class CycleManager : MonoBehaviour
 
     private void Start()
     {
-        ChooseWolfs();
-        if (WorldData.instance.randomizePositions)
+        if (BlackScreen.instance != null)
+        {
+            BlackScreen.instance.done += ScreenIsNotBlack;
+            BlackScreen.instance.FadeFromBlack();
+        }
+        else
+        {
+            ScreenIsNotBlack();
+        }
+        if (!GameInfo.isTutorial)
+        {
+            ChooseWolfs();
+        }
+        else
+        {
+            AddWolfs();
+        }
+        if (WorldData.instance.randomizePositions && !GameInfo.isTutorial)
         {
             RandomizePositions();
         }
+    }
+
+    private void AddWolfs()
+    {
+        for (int i = 0; i < allCharacters.Count; i++)
+        {
+            if (allCharacters[i].isWolf)
+            {
+                wolfs.Add(i);
+            }
+        }
+    }
+
+    private void ScreenIsNotBlack()
+    {
+        BlackScreen.instance.done -= ScreenIsNotBlack;
         StartCoroutine(DelayStartDay());
+        EventSystem.instance.QueueEvent("GameStarted");
     }
 
     private void RandomizePositions()
@@ -58,6 +96,10 @@ public class CycleManager : MonoBehaviour
     private List<int> wolfs = new List<int>();
     private void ChooseWolfs()
     {
+        for (int i = 0; i < allCharacters.Count; i++)
+        {
+            allCharacters[i].isWolf = false;
+        }
         while (wolfs.Count < WorldData.instance.wolfCount)
         {
             int random = UnityEngine.Random.Range(0, allCharacters.Count);
@@ -73,6 +115,7 @@ public class CycleManager : MonoBehaviour
     {
         yield return new WaitForSeconds(1f);
         StartDayCycle();
+        EventSystem.instance.QueueEvent("DayStarted");
     }
 
     public void StartDayCycle()
@@ -104,6 +147,23 @@ public class CycleManager : MonoBehaviour
         else
         {
             StartCoroutine(NightSequence());
+            StartCoroutine(FadeAwayMusic());
+        }
+    }
+
+    private float savedAudioVolume;
+    public IEnumerator FadeAwayMusic()
+    {
+        AudioSource audio = WorldData.instance.audioSource;
+        float timer = 0f;
+        float startVol = audio.volume;
+        savedAudioVolume = startVol;
+        float endVold = 0.01f;
+        while (timer < fadeMusicNightDuration)
+        {
+            audio.volume = Mathf.Lerp(startVol, endVold, timer / fadeMusicNightDuration);
+            timer += Time.deltaTime;
+            yield return new WaitForEndOfFrame();
         }
     }
 
@@ -147,8 +207,24 @@ public class CycleManager : MonoBehaviour
         WorldData.instance.nightAnim.HideClouds();
         yield return new WaitUntil(() => nightCallbackDone);
         WorldData.instance.nightAnim.blackScreenDone -= BlackScreenDone;
+        StartCoroutine(FadeBackMusic());
         EndNightCycle();
     }
+
+    public IEnumerator FadeBackMusic()
+    {
+        AudioSource audio = WorldData.instance.audioSource;
+        float timer = 0f;
+        float startVol = 0.01f;
+        float endVold = savedAudioVolume;
+        while (timer < fadeMusicNightDuration)
+        {
+            audio.volume = Mathf.Lerp(startVol, endVold, timer / fadeMusicNightDuration);
+            timer += Time.deltaTime;
+            yield return new WaitForEndOfFrame();
+        }
+    }
+
     private void BlackScreenDone()
     {
         nightCallbackDone = true;

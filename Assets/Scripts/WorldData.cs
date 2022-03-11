@@ -14,6 +14,9 @@ public class WorldData : MonoBehaviour
     public LayerMask nodesLayer;
     public GameUI gameUI;
     public NightAnim nightAnim;
+    public AudioSource audioSource;
+    public AudioClip attackSound;
+    public TutorialSystem tutorial;
 
     [Header("Gameplay Data")]
     public int wolfCount = 2;

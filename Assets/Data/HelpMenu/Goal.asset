@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eee56a98096ba274bb91528d1554e9da, type: 3}
+  m_Name: Goal
+  m_EditorClassIdentifier: 
+  header: GOAL OF THE GAME
+  description: "Werewolves are hiding behind the appearance of two of the eight villagers.
+    During each night they hunt for human blood. Unfortunately, we can\u2019t see
+    what happens during the night. However, during the day we can see who\u2019s
+    hurt and try to determine who attacked them. Our goal is to identify the two
+    werewolves and kill them during the day, once and for all. "
