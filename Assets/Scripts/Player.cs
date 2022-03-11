@@ -39,7 +39,8 @@ public class Player : MonoBehaviour
 
         if (selectedCharacter != null && Input.GetMouseButtonDown(0))
         {
-            RaycastHit2D rayHit = Physics2D.GetRayIntersection(Camera.main.ScreenPointToRay(Input.mousePosition), 100f, WorldData.instance.charactersLayer);
+            RaycastHit2D rayHit = Physics2D.GetRayIntersection(Camera.main.ScreenPointToRay(Input.mousePosition), 100f, WorldData.instance.charactersLayer + WorldData.instance.nodesLayer);
+            Debug.LogError(rayHit);
             if (rayHit.collider == null)
             {
                 DeslectCurrentCharacter();

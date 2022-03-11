@@ -133,6 +133,7 @@ public class Character : MonoBehaviour
         }
         if (selectState == SelectState.selected)
         {
+
             if (!TryAttack())
             {
                 TryMove();
@@ -382,12 +383,14 @@ public class Character : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
+
             RaycastHit2D rayHit = Physics2D.GetRayIntersection(Camera.main.ScreenPointToRay(Input.mousePosition), 100f, WorldData.instance.nodesLayer);
             if (rayHit.collider != null)
             {
                 var node = rayHit.collider.GetComponent<Node>();
                 if (node != null)
                 {
+
                     if (node.IsEmpty() && nodesInRange.Contains(node))
                     {
                         StartCoroutine(GoToNodeSequence(node));
